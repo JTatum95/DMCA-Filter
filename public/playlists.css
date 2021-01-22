@@ -1,0 +1,49 @@
+:root {
+    --black: #000000;
+    --slate: #101214;
+    --grey: #1E252A;
+    --green: #00D770;
+
+    --breakpoint-sm: 576px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 992px;
+    --breakpoint-xl: 1200px;
+}
+
+/*html, body {*/
+/*    background-color: #101214 !important;*/
+/*}*/
+
+html,body {
+    font-family: "Helvetica Neue";
+    background-color: #1E252A;
+}
+
+.jumbotron {
+    background-color: #101214;
+    margin-top: 2rem;
+    color: white;
+}
+
+table {
+    color: white !important;
+}
+
+td p {
+    font-size: 26px;
+    vertical-align: center;
+}
+
+td button {
+    font-size: 26px;
+    vertical-align: center;
+}
+
+h1 {
+    color: white !important;
+}
+
+button {
+    color: black !important;
+    background-color: #00D770 !important;
+}

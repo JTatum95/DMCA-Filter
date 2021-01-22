@@ -17,119 +17,153 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
+    <link rel="stylesheet" href="playlists.css">
+
 </head>
 <body>
-<h1>Wowee look at all these playlists</h1>
+<div class="container">
+    <div class="jumbotron jumbotron-fluid">
+        <h1 id="header">Playlists for </h1>
+    </div>
 
-<table class="table" id="playlist_table">
-    <tbody id="playlist_body">
 
-    </tbody>
-</table>
+    <table class="table" id="playlist_table">
+        <tbody id="playlist_body">
+
+        </tbody>
+    </table>
+</div>
 </body>
+
+
 
 <script type="application/javascript">
 
-var hash = window.location.hash;
-var start = hash.indexOf("=");
-var end = hash.indexOf("&")
-window.location.hash = "";
+    var hash = window.location.hash;
+    var start = hash.indexOf("=");
+    var end = hash.indexOf("&")
+    window.location.hash = "";
 
-var access_token = hash.slice(start + 1, end);
+    var access_token = hash.slice(start + 1, end);
 
-console.log("Access Token: " + access_token);
+    console.log("Access Token: " + access_token);
 
-let scopes = 'user-read-private ' +
-    'ugc-image-upload ' +
-    'playlist-read-private ' +
-    'playlist-read-collaborative ' +
-    'playlist-modify-private ' +
-    'playlist-modify-public ';
+    let scopes = 'user-read-private ' +
+        'ugc-image-upload ' +
+        'playlist-read-private ' +
+        'playlist-read-collaborative ' +
+        'playlist-modify-private ' +
+        'playlist-modify-public ';
 
-if(error)
-    console.log("Big yikes");
+    var redirect = "http://localhost:8000/playlists.html";
 
-var redirect = "http://localhost:8000/playlists.html";
-
-// $.ajax({
-//     url: "https://api.spotify.com/v1/me",
-//     type: "GET",
-//     headers: {
-//         'Authorization': 'Bearer ' + access_token
-//     },
-//     error: (err) => {
-//         console.log("AJAX Error on Playlist:" + JSON.stringify(err, null, 2));
-//     },
-//     success: (res) => {
-//         console.log("Results: " + JSON.stringify(res));
-//     }
-// });
-
-function getTracks(token, playlist_ID){
     $.ajax({
-        url: "https://api.spotify.com/v1/playlists/" + playlist_ID + "/tracks",
+        url: "https://api.spotify.com/v1/me",
         type: "GET",
         headers: {
-            'Authorization': 'Bearer ' + token
+            'Authorization': 'Bearer ' + access_token
+        },
+        error: (err) => {
+            console.log("AJAX Error on Playlist:" + JSON.stringify(err, null, 2));
+        },
+        success: (res) => {
+            $('#header').append(res.display_name);
+        }
+    });
+
+    // function getTracks(token, playlist_ID){
+    //     $.ajax({
+    //         url: "https://api.spotify.com/v1/playlists/" + playlist_ID + "/tracks",
+    //         type: "GET",
+    //         headers: {
+    //             'Authorization': 'Bearer ' + token
+    //         },
+    //         error: function (err) {
+    //             console.log("AJAX Error :" + JSON.stringify(err, null, 2));
+    //         },
+    //         success: (res) => {
+    //             console.log(JSON.stringify(res));
+    //         }
+    // }
+
+    $.ajax({
+        url: "https://api.spotify.com/v1/me/playlists?limit=10",
+        type: "GET",
+        headers: {
+            'Authorization': 'Bearer ' + access_token
         },
         error: function (err) {
             console.log("AJAX Error :" + JSON.stringify(err, null, 2));
         },
         success: (res) => {
-            console.log(JSON.stringify(res));
+            var items = res.items;
+            var names = [];
+            var descriptions = [];
+            var images = []; // come in either 0 or 3 different resolutions - probably only smallest is needed
+            var links = []; // Playlist urls
+            var ids = []; // Used for the API calls to get tracks in playlist
+
+            for(let i = 0; i < items.length; i++){
+                names[i] = items[i].name;
+                descriptions[i] = items[i].description;
+                links[i] = items[i].external_urls.spotify;
+                ids[i] = items[i].id;
+
+                // 3 options for personal playlists - 640x640, 300x300, and 60x60
+                // only one option for followed playlists with no set dimension
+                images[i] = items[i].images[0].url;
+
+                // Create table
+                let row = document.createElement("tr");
+                let cell_img = document.createElement("td");
+                let cell_text = document.createElement("td");
+                let cell_btn = document.createElement("td");
+                let para = document.createElement("p");
+                let cellText = document.createTextNode(names[i]);
+                let button = document.createElement("button");
+                let img = document.createElement("img");
+
+                // Set up img
+                img.src = images[i];
+                img.height = 60;
+                img.width = 60;
+
+                // Set up btn
+                button.className = "btn";
+                button.innerHTML = "Show songs";
+                button.onclick = function() {
+                    $.ajax({
+                        url: "https://api.spotify.com/v1/playlists/" + res.items[i].id + "/tracks?fields=items(track.is_local, track.name, track.album.name, track.artists.name, track.id)",
+                        type: "GET",
+                        headers: {
+                            'Authorization': 'Bearer ' + access_token
+                        },
+                        error: function (err) {
+                            console.log("AJAX Error :" + JSON.stringify(err, null, 2));
+                        },
+                        success: (res) => {
+                            console.log(JSON.stringify(res));
+                        }
+                    });
+                };
+
+                // Add to table
+                para.appendChild(cellText);
+                cell_img.appendChild(img);
+                cell_text.append(para);
+                cell_btn.append(button);
+                row.appendChild(cell_img);
+                row.appendChild(cell_text);
+                row.appendChild(cell_btn);
+
+                $('#playlist_body').append(row);
+
+            }
+            // console.log("Names: " + names);
+            // console.log("Descriptions: " + descriptions);
+            // console.log("Links: " + links);
         }
-}
-
-$.ajax({
-    url: "https://api.spotify.com/v1/me/playlists?limit=10",
-    type: "GET",
-    headers: {
-        'Authorization': 'Bearer ' + access_token
-    },
-    error: function (err) {
-        console.log("AJAX Error :" + JSON.stringify(err, null, 2));
-    },
-    success: (res) => {
-        // console.log("Results: " + JSON.stringify(res));
-        var link = res.href;
-        var items = res.items;
-        // console.log("Length: " + items.length);
-        var names = [];
-        var descriptions = [];
-        var images = []; // come in 3 different resolutions - probably only smallest is needed
-        var links = [];
-        for(var i = 0; i < items.length; i++){
-            names[i] = items[i].name;
-            descriptions[i] = items[i].description;
-            images[i] = items[i].images[0].url; // Should be 3 options - 640x640, 300x300, and 60x60
-            links[i] = items[i].external_urls.spotify;
-            let row = document.createElement("tr");
-            let cell = document.createElement("td");
-            let para = document.createElement("p");
-            let cellText = document.createTextNode(names[i]);
-
-            let img = document.createElement("img");
-            img.src = images[i];
-            img.height = 60;
-            img.width = 60;
-
-            para.appendChild(cellText);
-            cell.appendChild(img);
-            cell.append(para);
-            row.appendChild(cell);
-
-            $('#playlist_body').append(row);
-
-
-            // var row_string = '<tr><th scope="row">' + names[i] + '</th>' +
-            //     '<img src="' + images[i] + '" height="60" width="60"></tr>';
-            // $('#playlist_table').append(row_string);
-        }
-        // console.log("Names: " + names);
-        // console.log("Descriptions: " + descriptions);
-        // console.log("Links: " + links);
-    }
-});
+    });
 
 </script>
 </html>

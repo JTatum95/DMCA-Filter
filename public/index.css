@@ -1,0 +1,18 @@
+html, body {
+    background-color: #101214 !important;
+}
+
+.jumbotron {
+    background-color: #1E252A;
+    margin-top: 2rem;
+    color: white;
+}
+
+h1 {
+    color: white !important;
+}
+
+button {
+    color: black !important;
+    background-color: #00D770 !important;
+}
