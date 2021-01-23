@@ -9,8 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-    <!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
+<!--    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">-->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -34,11 +34,11 @@
         </tbody>
     </table>
 
-    <div class="modal" id="tracks_modal" tabindex="-1" role="dialog">
+    <div class="modal" id="tracks_modal" tabindex="-1" role="dialog" data-backdrop="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Songs in playlist </h5>
+                    <h5 class="modal_title" id="modal_title">Songs in playlist </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -93,7 +93,7 @@
         console.log("Tracks: " + track_names);
         console.log("Artists: " + artist_names);
 
-        $('modal-title').append(name);
+        $('#modal_title').append(name);
 
         for(let j = 0; j < track_names.length; j++){
 
@@ -197,19 +197,25 @@
                             for(let k = 0; k < res.items.length; k++){
                                 track_names[k] = res.items[k].track.name; // Grab name of track
                                 album_name[k] = res.items[k].track.album.name; // Grab album
-                                // if (res.items[k].track.artists.length > 1){ // If there are more than 1 artist loop through
-                                //     for(let l = 0; l < res.items[k].track.artists.length; l++) {
-                                //         if (l>0) // Add commas and spacing to artists after the first
-                                //             artist_names[k] += " and ";
-                                //         artist_names[k] += res.items[k].track.artists[l].name;
-                                //     }
-                                // } else
-                                artist_names[k] = res.items[k].track.artists[0].name;
-                            }
 
-                            // console.log("Modal button - names: " + names[i])
-                            // console.log("Modal button - tracks: " + res.items[i].track)
-                            // console.log(JSON.stringify(res));
+
+                                var artist_length = res.items[k].track.artists.length;
+                                artist_names[k] = res.items[k].track.artists[0].name;
+
+                                if (artist_length === 2) // Special formatting for 2
+                                    artist_names[k] += " and " + res.items[k].track.artists[1].name;
+
+                                else if (artist_length > 2){ // If there are more than 2 artists loop through
+                                    for(let l = 1; l < artist_length; l++) { // Add commas and spacing to artists after the first
+                                        if (l === artist_length - 1)
+                                            artist_names[k] += ", and ";
+                                        else
+                                            artist_names[k] += ", ";
+
+                                        artist_names[k] += res.items[k].track.artists[l].name
+                                    }
+                                }
+                            }
 
                             populateModal(track_names, artist_names);
 
