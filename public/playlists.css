@@ -25,13 +25,17 @@ html,body {
     color: white;
 }
 
-table {
+#playlist_table {
     color: white !important;
 }
 
-td p {
+#playlist_table td p {
     font-size: 26px;
     vertical-align: center;
+}
+
+#track_table {
+    color:black;
 }
 
 td button {
