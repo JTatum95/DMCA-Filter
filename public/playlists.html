@@ -9,7 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -32,13 +33,36 @@
 
         </tbody>
     </table>
+
+    <div class="modal" id="tracks_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Songs in playlist </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <table>
+
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 </body>
 
-
-
 <script type="application/javascript">
 
+
+    // Get access token from url hash
     var hash = window.location.hash;
     var start = hash.indexOf("=");
     var end = hash.indexOf("&")
@@ -46,8 +70,7 @@
 
     var access_token = hash.slice(start + 1, end);
 
-    console.log("Access Token: " + access_token);
-
+    // Define scopes for project
     let scopes = 'user-read-private ' +
         'ugc-image-upload ' +
         'playlist-read-private ' +
@@ -57,6 +80,36 @@
 
     var redirect = "http://localhost:8000/playlists.html";
 
+    function populateModal(track_names, artist_names){
+        console.log("Got to populate");
+        console.log("Tracks: " + track_names);
+        console.log("Artists: " + artist_names);
+
+        $('modal-title').append(name);
+
+        for(let j = 0; j < track_names.length; j++){
+
+            let row = document.createElement("tr");
+            let cell_artist = document.createElement("td");
+            let cell_track = document.createElement("td");
+            let p_artist = document.createElement("p");
+            let p_track = document.createElement("p");
+            let artist = document.createTextNode(artist_names[j]);
+            let track = document.createTextNode(track_names[j]);
+
+            p_artist.appendChild(artist);
+            p_track.appendChild(track);
+            cell_artist.appendChild(p_artist);
+            cell_track.appendChild(p_track);
+            row.appendChild(cell_track);
+            row.appendChild(cell_artist);
+
+            $('#modal-body').append(row);
+        }
+        $('#tracks_modal').modal(focus);
+    }
+
+    // Gather user info
     $.ajax({
         url: "https://api.spotify.com/v1/me",
         type: "GET",
@@ -71,21 +124,8 @@
         }
     });
 
-    // function getTracks(token, playlist_ID){
-    //     $.ajax({
-    //         url: "https://api.spotify.com/v1/playlists/" + playlist_ID + "/tracks",
-    //         type: "GET",
-    //         headers: {
-    //             'Authorization': 'Bearer ' + token
-    //         },
-    //         error: function (err) {
-    //             console.log("AJAX Error :" + JSON.stringify(err, null, 2));
-    //         },
-    //         success: (res) => {
-    //             console.log(JSON.stringify(res));
-    //         }
-    // }
-
+    // Request playlist info for table
+    // TODO: implement pagination and fetch all playlists
     $.ajax({
         url: "https://api.spotify.com/v1/me/playlists?limit=10",
         type: "GET",
@@ -119,7 +159,7 @@
                 let cell_text = document.createElement("td");
                 let cell_btn = document.createElement("td");
                 let para = document.createElement("p");
-                let cellText = document.createTextNode(names[i]);
+                let textNode = document.createTextNode(names[i]);
                 let button = document.createElement("button");
                 let img = document.createElement("img");
 
@@ -142,13 +182,35 @@
                             console.log("AJAX Error :" + JSON.stringify(err, null, 2));
                         },
                         success: (res) => {
-                            console.log(JSON.stringify(res));
+                            var track_names = [];
+                            var artist_names = [];
+                            var album_name = [];
+
+                            for(let k = 0; k < res.items.length; k++){
+                                track_names[k] = res.items[k].track.name; // Grab name of track
+                                album_name[k] = res.items[k].track.album.name; // Grab album
+                                // if (res.items[k].track.artists.length > 1){ // If there are more than 1 artist loop through
+                                //     for(let l = 0; l < res.items[k].track.artists.length; l++) {
+                                //         if (l>0) // Add commas and spacing to artists after the first
+                                //             artist_names[k] += " and ";
+                                //         artist_names[k] += res.items[k].track.artists[l].name;
+                                //     }
+                                // } else
+                                artist_names[k] = res.items[k].track.artists[0].name;
+                            }
+
+                            // console.log("Modal button - names: " + names[i])
+                            // console.log("Modal button - tracks: " + res.items[i].track)
+                            // console.log(JSON.stringify(res));
+
+                            populateModal(track_names, artist_names);
+
                         }
                     });
                 };
 
                 // Add to table
-                para.appendChild(cellText);
+                para.appendChild(textNode);
                 cell_img.appendChild(img);
                 cell_text.append(para);
                 cell_btn.append(button);
@@ -159,9 +221,6 @@
                 $('#playlist_body').append(row);
 
             }
-            // console.log("Names: " + names);
-            // console.log("Descriptions: " + descriptions);
-            // console.log("Links: " + links);
         }
     });
 
