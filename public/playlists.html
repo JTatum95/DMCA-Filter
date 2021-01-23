@@ -35,7 +35,7 @@
     </table>
 
     <div class="modal" id="tracks_modal" tabindex="-1" role="dialog" data-backdrop="false">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal_title" id="modal_title">Songs in playlist </h5>
@@ -49,6 +49,7 @@
                         <tr>
                             <th scope="col">Song Title</th>
                             <th scope="col">Artist</th>
+                            <th scope="col">Album</th>
                         </tr>
                         </thead>
                         <tbody id="toPopulate">
@@ -88,10 +89,11 @@
 
     var redirect = "http://localhost:8000/playlists.html";
 
-    function populateModal(track_names, artist_names){
-        console.log("Got to populate");
-        console.log("Tracks: " + track_names);
-        console.log("Artists: " + artist_names);
+    function populateModal(track_names, artist_names, album_names){
+        // console.log("Got to populate");
+        // console.log("Tracks: " + track_names);
+        // console.log("Artists: " + artist_names);
+        // console.log("Albums: " + album_names);
 
         $('#modal_title').append(name);
 
@@ -100,17 +102,23 @@
             let row = document.createElement("tr");
             let cell_artist = document.createElement("td");
             let cell_track = document.createElement("td");
+            let cell_album = document.createElement("td");
             let p_artist = document.createElement("p");
             let p_track = document.createElement("p");
+            let p_album = document.createElement("p");
             let artist = document.createTextNode(artist_names[j]);
             let track = document.createTextNode(track_names[j]);
+            let album = document.createTextNode(album_names[j]);
 
             p_artist.appendChild(artist);
             p_track.appendChild(track);
+            p_album.appendChild(album);
             cell_artist.appendChild(p_artist);
             cell_track.appendChild(p_track);
+            cell_album.appendChild(p_album);
             row.appendChild(cell_track);
             row.appendChild(cell_artist);
+            row.appendChild(cell_album);
 
             $('#toPopulate').append(row);
         }
@@ -217,7 +225,7 @@
                                 }
                             }
 
-                            populateModal(track_names, artist_names);
+                            populateModal(track_names, artist_names, album_name);
 
                         }
                     });
