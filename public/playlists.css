@@ -11,9 +11,9 @@
     --breakpoint-xl: 1200px;
 }
 
-/*html, body {*/
-/*    background-color: #101214 !important;*/
-/*}*/
+html, body {
+    background-color: #1E252A !important;
+}
 
 
 #playlist_table {

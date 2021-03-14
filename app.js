@@ -10,7 +10,9 @@
 var express = require('express'); // Express web server framework
 
 var app = express();
+var port = process.env.PORT || 8080;
+
 app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/bootstrap-4.6.0-dist'));
-console.log('Listening on 8000');
-app.listen(8000);
+console.log('Listening on ' + port);
+app.listen(port);
