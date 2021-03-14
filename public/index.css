@@ -8,11 +8,8 @@ html, body {
     color: white;
 }
 
-h1 {
-    color: white !important;
-}
-
 button {
     color: black !important;
     background-color: #00D770 !important;
+    font-family: "Open Sans", "Montserrat";
 }

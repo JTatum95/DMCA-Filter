@@ -3,6 +3,7 @@
     --slate: #101214;
     --grey: #1E252A;
     --green: #00D770;
+    --lightgrey: #b3b3b3;
 
     --breakpoint-sm: 576px;
     --breakpoint-md: 768px;
@@ -14,17 +15,6 @@
 /*    background-color: #101214 !important;*/
 /*}*/
 
-html,body {
-    font-family: "Helvetica Neue",Helvetica, Arial, sans-serif;
-    background-color: #1E252A;
-}
-
-.jumbotron {
-    background-color: #101214;
-    margin-top: 2rem;
-    color: white;
-    text-align: center;
-}
 
 #playlist_table {
     color: white !important;

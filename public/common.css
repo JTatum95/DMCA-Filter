@@ -1,0 +1,20 @@
+html, body {
+    font-family: "Montserrat", "Open Sans", "Helvetica Neue",  "Open Sans", sans-serif;
+}
+
+.jumbotron {
+    background-color: #101214;
+    margin-top: 2rem;
+    color: white;
+    text-align: center;
+}
+
+h1 {
+    color: white !important;
+    font-weight: 700;
+}
+
+h2 {
+    color: white !important;
+    font-weight: 400;
+}
